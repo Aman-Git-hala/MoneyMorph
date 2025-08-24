@@ -1,0 +1,217 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money Morph Login</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: black;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Background video */
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      display: none; /* shown only when login appears */
+    }
+
+    /* Intro Screen */
+    #intro {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100%;
+      background: black;
+      color: white;
+      font-size: 3rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      opacity: 1;
+      transition: opacity 1s ease-out;
+      z-index: 2;
+    }
+
+    #intro span {
+      opacity: 0;
+      display: inline-block;
+      transition: opacity 0.4s ease-in;
+    }
+
+    /* Ripple glow effect */
+    .glow-active {
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff, 0 0 18px #0ff;
+    }
+
+    .glow-dim {
+      color: #0dd;
+      text-shadow: 0 0 4px #0dd;
+    }
+
+    /* Login Page */
+    #login {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      background: #0a0a0a;
+      padding: 2rem;
+      border-radius: 12px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+      animation: fadeIn 1s forwards;
+    }
+
+    /* RGB flowing border like keyboard */
+    #login::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 16px;
+  padding: 4px;
+  background: linear-gradient(270deg, red, orange, yellow, lime, cyan, blue, violet, red);
+  background-size: 400% 400%;
+  
+  /* Mask for glowing border */
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;             /* standard property */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;         /* webkit fallback */
+  
+  animation: rgbFlow 8s linear infinite;
+  z-index: -1;
+}
+
+
+    @keyframes rgbFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 400% 50%; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #login h2 {
+      color: #00e6e6;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 8px #00e6e6;
+    }
+
+    input {
+      margin: 10px 0;
+      padding: 12px;
+      width: 250px;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      background: #111;
+      color: white;
+      font-size: 1rem;
+      box-shadow: 0 0 6px rgba(0, 255, 255, 0.4), inset 0 0 8px rgba(0, 255, 255, 0.3);
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #00e6e6;
+      color: black;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 230, 230, 0.6);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 230, 230, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Video -->
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="assets/money.mp4" type="video/mp4">
+  </video>
+
+  <!-- Intro -->
+  <div id="intro"></div>
+
+  <!-- Login Page -->
+  <div id="login">
+    <h2>Login</h2>
+    <input type="text" placeholder="User ID">
+    <input type="password" placeholder="Password">
+    <button>Login</button>
+  </div>
+
+  <script>
+    const text = "MoneyMorph"; 
+    const intro = document.getElementById("intro");
+    const video = document.getElementById("bg-video");
+
+    // Create spans for each letter
+    text.split("").forEach((char) => {
+      const span = document.createElement("span");
+      span.textContent = char;
+      intro.appendChild(span);
+    });
+
+    const spans = intro.querySelectorAll("span");
+
+    // Step 1: Smooth fade-in letters
+    spans.forEach((span, i) => {
+      setTimeout(() => {
+        span.style.opacity = 1;
+      }, i * 200);
+    });
+
+    // Step 2: Ripple glow
+    setTimeout(() => {
+      spans.forEach((span, i) => {
+        setTimeout(() => {
+          spans.forEach((s, j) => {
+            s.classList.remove("glow-active", "glow-dim");
+            if (j < i) s.classList.add("glow-dim");
+          });
+          span.classList.add("glow-active");
+
+          // Step 3: After last glow, fade out intro and show login with video
+          if (i === spans.length - 1) {
+            setTimeout(() => {
+              intro.style.opacity = 0;
+              setTimeout(() => {
+                intro.style.display = "none";
+                video.style.display = "block"; // show background video
+                document.getElementById("login").style.display = "flex";
+              }, 600);
+            }, 250);
+          }
+        }, i * 150);
+      });
+    }, spans.length * 200 + 400);
+  </script>
+</body>
+</html>
