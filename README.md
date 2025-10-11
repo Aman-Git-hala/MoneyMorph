@@ -1,5 +1,2 @@
 # MoneyMorph
-Scamsters trynna scam
-can you read this
-yes i can
-Aryan is gay
+This is the ultimate transaction based website made for user authentication and cool UI
